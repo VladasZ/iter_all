@@ -39,7 +39,7 @@ pub enum TransactionEndpoints {
     Edit(Endpoint<"edit_transaction", i32, i32>),
 }
 
-static EDIT: Endpoint<"edit_transaction", i32, i32> = TransactionEndpoints::edit();
+static EDIT: Endpoint<"edit_transaction", i32, i32> = TransactionEndpoints::EDIT;
 
 #[test]
 fn test() {
@@ -73,10 +73,10 @@ fn test() {
 
     assert_eq!(
         vec![
-            TransactionEndpoints::add().name(),
-            TransactionEndpoints::get().name(),
-            TransactionEndpoints::delete().name(),
-            TransactionEndpoints::edit().name(),
+            TransactionEndpoints::ADD.name(),
+            TransactionEndpoints::GET.name(),
+            TransactionEndpoints::DELETE.name(),
+            TransactionEndpoints::EDIT.name(),
         ],
         vec![
             "add_transaction",

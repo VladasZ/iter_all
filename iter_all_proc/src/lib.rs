@@ -24,7 +24,7 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
         #(#variants)*
     };
 
-    let variants2 = data_enum.variants.iter().map(|variant| {
+    let variants3 = data_enum.variants.iter().map(|variant| {
         let variant_name = &variant.ident;
 
         let Fields::Unnamed(ref unnamed) = variant.fields else {
@@ -33,17 +33,15 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
 
         let ty = &unnamed.unnamed.first().unwrap().ty;
 
-        let lowercase_ident = format_ident!("{}", variant_name.to_string().to_lowercase());
+        let uppercase_ident = format_ident!("{}", variant_name.to_string().to_uppercase());
 
         quote! {
-            pub const fn #lowercase_ident() -> #ty {
-                iter_all::ConstDefault::const_default()
-            }
+            pub const #uppercase_ident: #ty = ConstDefault::const_default();
         }
     });
 
-    let variants2 = quote! {
-        #(#variants2)*
+    let variants3 = quote! {
+        #(#variants3)*
     };
 
     quote! {
@@ -54,7 +52,7 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
         }
 
         impl #enum_name {
-            #variants2
+            #variants3
         }
     }
     .into()

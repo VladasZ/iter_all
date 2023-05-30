@@ -36,8 +36,8 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
         let lowercase_ident = format_ident!("{}", variant_name.to_string().to_lowercase());
 
         quote! {
-            fn #lowercase_ident() -> #ty {
-                Default::default()
+            pub const fn #lowercase_ident() -> #ty {
+                iter_all::ConstDefault::const_default()
             }
         }
     });

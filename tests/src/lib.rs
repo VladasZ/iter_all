@@ -3,12 +3,18 @@
 #![feature(adt_const_params)]
 #![feature(const_trait_impl)]
 
-use iter_all::IterAll;
+use iter_all::{ConstDefault, IterAll};
 use iter_all_proc::IterAll;
 
 #[derive(Default)]
 pub struct Endpoint<const NAME: &'static str, In, Out> {
     _p: Option<(In, Out)>,
+}
+
+impl<const NAME: &'static str, In, Out> const ConstDefault for Endpoint<NAME, In, Out> {
+    fn const_default() -> Self {
+        Self { _p: None }
+    }
 }
 
 impl<const NAME: &'static str, In, Out> Endpoint<NAME, In, Out> {
@@ -32,6 +38,8 @@ pub enum TransactionEndpoints {
     Delete(Endpoint<"delete_transaction", i32, i32>),
     Edit(Endpoint<"edit_transaction", i32, i32>),
 }
+
+static EDIT: Endpoint<"edit_transaction", i32, i32> = TransactionEndpoints::edit();
 
 #[test]
 fn test() {
@@ -76,5 +84,7 @@ fn test() {
             "delete_transaction",
             "edit_transaction",
         ]
-    )
+    );
+
+    assert_eq!(EDIT.name(), "edit_transaction");
 }

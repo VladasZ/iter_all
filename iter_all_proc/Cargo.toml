@@ -1,6 +1,6 @@
 [package]
 name = "iter_all_proc"
-version = "0.1.2"
+version = "0.1.4"
 edition = "2021"
 authors = ["Vladas Zakrevksis <146100@gmail.com>"]
 description = "Iterate all enum vases"

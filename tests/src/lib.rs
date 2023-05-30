@@ -62,4 +62,19 @@ fn test() {
             "edit_transaction",
         ]
     );
+
+    assert_eq!(
+        vec![
+            TransactionEndpoints::add().name(),
+            TransactionEndpoints::get().name(),
+            TransactionEndpoints::delete().name(),
+            TransactionEndpoints::edit().name(),
+        ],
+        vec![
+            "add_transaction",
+            "get_transactions",
+            "delete_transaction",
+            "edit_transaction",
+        ]
+    )
 }

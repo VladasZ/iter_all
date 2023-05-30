@@ -1,37 +1,60 @@
 use proc_macro::TokenStream;
-use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput};
+use quote::{format_ident, quote};
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 #[proc_macro_derive(IterAll)]
 pub fn iter_all_macro(input: TokenStream) -> TokenStream {
-    // Parse the input tokens into a syntax tree
     let input = parse_macro_input!(input as DeriveInput);
 
-    // Get the name of the enum
     let enum_name = &input.ident;
 
-    // Generate code for iterating over each variant of the enum
-    let variant_iter_code = match input.data {
-        Data::Enum(ref data_enum) => {
-            let iter_code = data_enum.variants.iter().map(|variant| {
-                let variant_name = &variant.ident;
-                quote! {
-                    action(#enum_name::#variant_name(Default::default()))
-                }
-            });
-            quote! {
-                #(#iter_code;)*
-            }
-        }
-        _ => panic!("IterAll can only be derived for enums"),
+    let Data::Enum(ref data_enum) = input.data else  {
+        panic!("IterAll can only be derived for enums");
     };
 
-    // Generate the implementation code for IterAll trait
+    let variants = data_enum.variants.iter().map(|variant| {
+        let variant_name = &variant.ident;
+
+        quote! {
+            action(#enum_name::#variant_name(Default::default()));
+        }
+    });
+
+    let variants = quote! {
+        #(#variants)*
+    };
+
+    let variants2 = data_enum.variants.iter().map(|variant| {
+        let variant_name = &variant.ident;
+
+        let Fields::Unnamed(ref unnamed) = variant.fields else {
+            panic!();
+        };
+
+        let ty = &unnamed.unnamed.first().unwrap().ty;
+
+        let lowercase_ident = format_ident!("{}", variant_name.to_string().to_lowercase());
+
+        quote! {
+            fn #lowercase_ident() -> #ty {
+                Default::default()
+            }
+        }
+    });
+
+    let variants2 = quote! {
+        #(#variants2)*
+    };
+
     quote! {
         impl iter_all::IterAll for #enum_name {
             fn iter_all(mut action: impl FnMut(Self)) {
-                #variant_iter_code
+                #variants
             }
+        }
+
+        impl #enum_name {
+            #variants2
         }
     }
     .into()

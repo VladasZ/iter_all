@@ -2,8 +2,9 @@
 #![allow(incomplete_features)]
 #![feature(adt_const_params)]
 #![feature(const_trait_impl)]
+#![feature(inherent_associated_types)]
 
-use iter_all::{ConstDefault, IterAll};
+use iter_all::IterAll;
 use iter_all_proc::IterAll;
 
 #[derive(Default)]
@@ -11,14 +12,8 @@ pub struct Endpoint<const NAME: &'static str, In, Out> {
     _p: Option<(In, Out)>,
 }
 
-impl<const NAME: &'static str, In, Out> const ConstDefault for Endpoint<NAME, In, Out> {
-    fn const_default() -> Self {
-        Self { _p: None }
-    }
-}
-
 impl<const NAME: &'static str, In, Out> Endpoint<NAME, In, Out> {
-    const fn default() -> Self {
+    const fn new() -> Self {
         Self { _p: None }
     }
 
@@ -27,7 +22,7 @@ impl<const NAME: &'static str, In, Out> Endpoint<NAME, In, Out> {
     }
 
     pub const fn req(&self) -> Endpoint<NAME, In, Out> {
-        Endpoint::<NAME, In, Out>::default()
+        Endpoint::<NAME, In, Out>::new()
     }
 }
 

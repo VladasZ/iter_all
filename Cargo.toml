@@ -1,5 +1,7 @@
 [workspace]
 
+resolver = "2"
+
 members = ["tests", "iter_all", "iter_all_proc"]
 
 default-members = ["iter_all"]

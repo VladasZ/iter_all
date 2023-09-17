@@ -1,6 +1,6 @@
 [package]
 name = "iter_all_proc"
-version = "0.1.5"
+version = "0.2.0"
 edition = "2021"
 authors = ["Vladas Zakrevksis <146100@gmail.com>"]
 description = "Iterate all enum vases"
@@ -12,7 +12,7 @@ repository = "https://github.com/VladasZ/iter_all"
 proc-macro = true
 
 [dependencies]
-quote = "1.0"
-syn = { version = "2.0.18", features = ["full", "extra-traits"] }
-proc-macro2 = "1.0.59"
+quote = "1.0.33"
+syn = { version = "2.0.36", features = ["full", "extra-traits"] }
+proc-macro2 = "1.0.67"
 

@@ -15,6 +15,12 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
     let variants = data_enum.variants.iter().map(|variant| {
         let variant_name = &variant.ident;
 
+        if let Fields::Unit = variant.fields {
+            return quote! {
+                action(#enum_name::#variant_name);
+            };
+        }
+
         quote! {
             action(#enum_name::#variant_name(Default::default()));
         }
@@ -27,6 +33,14 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
     let variants3 = data_enum.variants.iter().map(|variant| {
         let variant_name = &variant.ident;
 
+        let uppercase_ident = format_ident!("{}", variant_name.to_string().to_uppercase());
+
+        if let Fields::Unit = variant.fields {
+            return quote! {
+                pub const #uppercase_ident: #enum_name = #enum_name::#variant;
+            };
+        }
+
         let Fields::Unnamed(ref unnamed) = variant.fields else {
             panic!();
         };
@@ -35,22 +49,26 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
 
         let ty_str = ty.to_owned().to_token_stream().to_string();
 
-        let start = ty_str.find('<').unwrap();
-        let end = ty_str.find('>').unwrap();
+        match (ty_str.find('<'), ty_str.find('>')) {
+            (Some(start), Some(end)) => {
+                let generics = &ty_str[start + 1..end].trim();
 
-        let generics = &ty_str[start + 1..end].trim();
+                let only_type = &ty_str[0..start - 1].trim();
 
-        let only_type = &ty_str[0..start - 1].trim();
+                let only_type = format_ident!("{}", only_type);
 
-        let uppercase_ident = format_ident!("{}", variant_name.to_string().to_uppercase());
-        let only_type = format_ident!("{}", only_type);
+                use std::str::FromStr;
 
-        use std::str::FromStr;
+                let generics: proc_macro2::TokenStream =
+                    TokenStream::from_str(generics).unwrap().to_owned().into();
 
-        let generics: proc_macro2::TokenStream = TokenStream::from_str(generics).unwrap().to_owned().into();
-
-        quote! {
-            pub const #uppercase_ident: #ty = #only_type::<#generics>::new();
+                quote! {
+                    pub const #uppercase_ident: #ty = #only_type::<#generics>::new();
+                }
+            }
+            _ => quote! {
+                pub const #uppercase_ident: #ty = #ty::new();
+            },
         }
     });
 

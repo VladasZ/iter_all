@@ -7,79 +7,32 @@
 use iter_all::IterAll;
 use iter_all_proc::IterAll;
 
-#[derive(Default)]
-pub struct Endpoint<const NAME: &'static str, In, Out> {
-    _p: Option<(In, Out)>,
-}
-
-impl<const NAME: &'static str, In, Out> Endpoint<NAME, In, Out> {
-    const fn new() -> Self {
-        Self { _p: None }
-    }
-
-    const fn name(&self) -> &'static str {
-        NAME
-    }
-
-    pub const fn req(&self) -> Endpoint<NAME, In, Out> {
-        Endpoint::<NAME, In, Out>::new()
-    }
-}
+mod generics_test;
 
 #[derive(IterAll)]
-pub enum TransactionEndpoints {
-    Add(Endpoint<"add_transaction", i32, i32>),
-    Get(Endpoint<"get_transactions", i32, i32>),
-    Delete(Endpoint<"delete_transaction", i32, i32>),
-    Edit(Endpoint<"edit_transaction", i32, i32>),
+enum Enum {
+    A,
+    B,
+    C,
+    D,
 }
 
-static EDIT: Endpoint<"edit_transaction", i32, i32> = TransactionEndpoints::EDIT;
+impl Enum {
+    fn name(&self) -> &'static str {
+        match self {
+            Enum::A => "A",
+            Enum::B => "B",
+            Enum::C => "C",
+            Enum::D => "D",
+        }
+    }
+}
 
 #[test]
 fn test() {
     let mut sargovnost = vec![];
 
-    TransactionEndpoints::iter_all(|tx| match tx {
-        TransactionEndpoints::Add(add) => {
-            sargovnost.push(add.name());
-        }
-        TransactionEndpoints::Get(add) => {
-            sargovnost.push(add.name());
-        }
-        TransactionEndpoints::Delete(add) => {
-            sargovnost.push(add.name());
-        }
+    Enum::iter_all(|val| sargovnost.push(val.name()));
 
-        TransactionEndpoints::Edit(add) => {
-            sargovnost.push(add.name());
-        }
-    });
-
-    assert_eq!(
-        sargovnost,
-        vec![
-            "add_transaction",
-            "get_transactions",
-            "delete_transaction",
-            "edit_transaction",
-        ]
-    );
-
-    assert_eq!(
-        vec![
-            TransactionEndpoints::ADD.name(),
-            TransactionEndpoints::GET.name(),
-            TransactionEndpoints::DELETE.name(),
-            TransactionEndpoints::EDIT.name(),
-        ],
-        vec![
-            "add_transaction",
-            "get_transactions",
-            "delete_transaction",
-            "edit_transaction",
-        ]
-    );
-
-    assert_eq!(EDIT.name(), "edit_transaction");
+    assert_eq!(vec!["A", "B", "C", "D",], sargovnost);
 }

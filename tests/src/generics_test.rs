@@ -19,11 +19,13 @@ impl<const NAME: &'static str, In, Out> Endpoint<NAME, In, Out> {
         Endpoint::<NAME, In, Out>::new()
     }
 }
+#[derive(Default)]
+struct Wallet;
 
 #[derive(IterAll)]
-pub enum TransactionEndpoints {
-    Add(Endpoint<"add_transaction", i32, i32>),
-    Get(Endpoint<"get_transactions", i32, i32>),
+enum TransactionEndpoints {
+    Add(Endpoint<"add_transaction", Wallet, Wallet>),
+    Get(Endpoint<"get_transactions", i32, Vec<Wallet>>),
     Delete(Endpoint<"delete_transaction", i32, i32>),
     Edit(Endpoint<"edit_transaction", i32, i32>),
 }

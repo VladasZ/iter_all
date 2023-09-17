@@ -49,7 +49,7 @@ pub fn iter_all_macro(input: TokenStream) -> TokenStream {
 
         let ty_str = ty.to_owned().to_token_stream().to_string();
 
-        match (ty_str.find('<'), ty_str.find('>')) {
+        match (ty_str.find('<'), ty_str.rfind('>')) {
             (Some(start), Some(end)) => {
                 let generics = &ty_str[start + 1..end].trim();
 
